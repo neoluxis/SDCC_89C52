@@ -1,0 +1,4 @@
+".\Objects\main.obj",
+"..\neolib51\lib\neolib51.lib" 
+TO ".\Objects\project" 
+PRINT(".\Listings\project.m51") RAMSIZE(256) 

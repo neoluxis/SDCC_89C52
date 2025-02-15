@@ -1,0 +1,11 @@
+".\Objects\main.obj",
+".\Objects\isr.obj",
+".\Objects\btn.obj",
+".\Objects\led.obj",
+".\Objects\time.obj",
+".\Objects\tim.obj",
+".\Objects\exti.obj",
+".\Objects\display_seg.obj",
+".\Objects\pwm.obj" 
+TO ".\Objects\project" 
+PRINT(".\Listings\project.m51") RAMSIZE(256) 

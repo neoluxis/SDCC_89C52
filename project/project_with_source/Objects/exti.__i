@@ -1,0 +1,1 @@
+"..\peripherials\src\exti.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\exti.lst) OBJECT(.\Objects\exti.obj)

@@ -1,0 +1,58 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../user"
+		},
+		{
+			"path": "../peripherials"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.c": "c",
+			"tim.h": "c",
+			"exti.h": "c",
+			"types.h": "c",
+			"led.h": "c",
+			"btn.h": "c",
+			"time.h": "c",
+			"neolib51.h": "c",
+			"regx52.h": "c"
+		},
+		"C_Cpp.default.includePath": [
+			".",
+			"../user",
+			"../peripherials/inc",
+			"d:/Keil_v5/C51/INC",
+			"d:/Keil_v5/C51/INC/Atmel",
+			"${default}"
+		],
+		"C_Cpp.default.defines": [
+			"__C51__",
+			"__VSCODE_C51__",
+			"reentrant=",
+			"compact=",
+			"small=",
+			"large=",
+			"data=",
+			"idata=",
+			"pdata=",
+			"bdata=",
+			"xdata=",
+			"code=",
+			"bit=char",
+			"sbit=char",
+			"sfr=char",
+			"sfr16=int",
+			"sfr32=int",
+			"interrupt=",
+			"using=",
+			"_at_=",
+			"_priority_=",
+			"_task_="
+		],
+	}
+}

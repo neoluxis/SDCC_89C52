@@ -1,0 +1,293 @@
+C51 COMPILER V9.60.7.0   TIM                                                               12/23/2024 02:56:05 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIM
+OBJECT MODULE PLACED IN .\Objects\tim.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\peripherials\src\tim.c WARNINGLEVEL(0) OPTIMIZE(9,SIZE) BROWSE INCDIR
+                    -(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\tim.lst) OBJECT(.\Objects\tim.obj)
+
+line level    source
+
+   1          #include "neolib51/tim.h"
+   2          
+   3          #if TIM == ENABLE
+   4          
+   5          #include "REGX52.H"
+   6          #include "MATH.H"
+   7          
+   8          ntim_t nt0, nt1;
+   9          ntim_t *ntim0 = &nt0;
+  10          ntim_t *ntim1 = &nt1;
+  11          
+  12          static void __ntim_calc_reload_in_13bit(ntim_t *ntimx)
+  13          {
+  14   1          uint16_t count = 0; // 计数次数
+  15   1          uint16_t reload = 0;
+  16   1          switch (ntimx->arbeit)
+  17   1          {
+  18   2          case TIM_ARB_TIMER:
+  19   2              count = ntimx->period / PRD_MACHINE_CYCLE;
+  20   2              break;
+  21   2          case TIM_ARB_COUNTER:
+  22   2              count = ntimx->period;
+  23   2              break;
+  24   2          default:
+  25   2              break;
+  26   2          }
+  27   1          reload = 0x1FFF - count;
+  28   1          ntimx->th = (uint8_t)(reload >> 8);
+  29   1          ntimx->tl = (uint8_t)(reload & 0xFF);
+  30   1      }
+  31          
+  32          static void __ntim_calc_reload_in_16bit(ntim_t *ntimx)
+  33          {
+  34   1          uint16_t count = 0; // 计数次数
+  35   1          uint16_t reload = 0;
+  36   1          switch (ntimx->arbeit)
+  37   1          {
+  38   2          case TIM_ARB_TIMER:
+  39   2              count = ntimx->period / PRD_MACHINE_CYCLE;
+  40   2              break;
+  41   2          case TIM_ARB_COUNTER:
+  42   2              count = ntimx->period;
+  43   2              break;
+  44   2          default:
+  45   2              break;
+  46   2          }
+  47   1          reload = 0xFFFF - count;
+  48   1          ntimx->th = (uint8_t)(reload >> 8);
+  49   1          ntimx->tl = (uint8_t)(reload & 0xFF);
+  50   1      }
+  51          
+  52          static void __ntim_calc_reload_in_8bit(ntim_t *ntimx)
+  53          {
+  54   1          uint8_t count = 0; // 计数次数
+C51 COMPILER V9.60.7.0   TIM                                                               12/23/2024 02:56:05 PAGE 2   
+
+  55   1          uint8_t reload = 0;
+  56   1          switch (ntimx->arbeit)
+  57   1          {
+  58   2          case TIM_ARB_TIMER:
+  59   2              count = ntimx->period / PRD_MACHINE_CYCLE;
+  60   2              break;
+  61   2          case TIM_ARB_COUNTER:
+  62   2              count = ntimx->period;
+  63   2              break;
+  64   2          default:
+  65   2              break;
+  66   2          }
+  67   1          reload = 0xFF - count;
+  68   1          ntimx->tl = reload;
+  69   1          ntimx->th = reload;
+  70   1      }
+  71          
+  72          static void __ntim_calc_reload(ntim_t *ntimx)
+  73          {
+  74   1          uint16_t count = 0; // 计数次数
+  75   1          switch (ntimx->mode)
+  76   1          {
+  77   2          case TIM_MODE_13BIT:
+  78   2              __ntim_calc_reload_in_13bit(ntimx);
+  79   2              break;
+  80   2          case TIM_MODE_16BIT:
+  81   2              __ntim_calc_reload_in_16bit(ntimx);
+  82   2              break;
+  83   2          case TIM_MODE_8BIT:
+  84   2              __ntim_calc_reload_in_8bit(ntimx);
+  85   2              break;
+  86   2          case TIM_MODE_2x8BIT:
+  87   2              // TODO: Implement this mode
+  88   2              break;
+  89   2          case TIM_MODE_AUTO: // 自动选择模式
+  90   2              count = ntimx->period / PRD_MACHINE_CYCLE;
+  91   2              if (count < 0xff) // 8bit 255
+  92   2              {
+  93   3                  ntimx->mode = TIM_MODE_8BIT;
+  94   3                  __ntim_calc_reload_in_8bit(ntimx);
+  95   3              }
+  96   2              else if (count < 0x1fff) // 13bit 8191
+  97   2              {
+  98   3                  ntimx->mode = TIM_MODE_13BIT;
+  99   3                  __ntim_calc_reload_in_13bit(ntimx);
+ 100   3              }
+ 101   2              else // 16bit 65535
+ 102   2              {
+ 103   3                  ntimx->mode = TIM_MODE_16BIT;
+ 104   3                  __ntim_calc_reload_in_16bit(ntimx);
+ 105   3              }
+ 106   2              break;
+ 107   2          default:
+ 108   2              break;
+ 109   2          }
+ 110   1      }
+ 111          
+ 112          static void __ntim_set_mode(ntim_t *ntimx)
+ 113          {
+ 114   1          switch (ntimx->tim_id)
+ 115   1          {
+ 116   2          case TIM0:
+C51 COMPILER V9.60.7.0   TIM                                                               12/23/2024 02:56:05 PAGE 3   
+
+ 117   2              TMOD &= 0xF0;
+ 118   2              TMOD |= ntimx->mode;
+ 119   2              break;
+ 120   2          case TIM1:
+ 121   2              TMOD &= 0x0F;
+ 122   2              TMOD |= ntimx->mode << 4;
+ 123   2              break;
+ 124   2          }
+ 125   1      }
+ 126          
+ 127          static void __ntim_set_arbeit(ntim_t *ntimx)
+ 128          {
+ 129   1          switch (ntimx->tim_id)
+ 130   1          {
+ 131   2          case TIM0:
+ 132   2              if (ntimx->arbeit == TIM_ARB_TIMER)
+ 133   2                  TMOD &= ~(0x01 << 2);
+ 134   2              else
+ 135   2                  TMOD |= 0x01 << 2;
+ 136   2              break;
+ 137   2          case TIM1:
+ 138   2              if (ntimx->arbeit == TIM_ARB_TIMER)
+ 139   2                  TMOD &= ~(0x01 << 6);
+ 140   2              else
+ 141   2                  TMOD |= 0x01 << 6;
+ 142   2              break;
+ 143   2          default:
+ 144   2              break;
+ 145   2          }
+ 146   1      }
+ 147          
+ 148          void ntim_init(ntim_t *ntimx)
+ 149          {
+ 150   1          __ntim_calc_reload(ntimx);
+ 151   1          __ntim_set_mode(ntimx);
+ 152   1          __ntim_set_arbeit(ntimx);
+ 153   1          ntim_reload(ntimx);
+ 154   1          if (ntimx->enable_irq)
+ 155   1          {
+ 156   2              ntim_en_irq(ntimx);
+ 157   2          }
+ 158   1          else
+ 159   1          {
+ 160   2              ntim_dis_irq(ntimx);
+ 161   2          }
+ 162   1      
+ 163   1          if (ntimx->enable)
+ 164   1          {
+ 165   2              ntim_start(ntimx);
+ 166   2          }
+ 167   1          else
+ 168   1          {
+ 169   2              ntim_stop(ntimx);
+ 170   2          }
+ 171   1      }
+ 172          
+ 173          void ntim_deinit(ntim_t *ntimx)
+ 174          {
+ 175   1          ntim_stop(ntimx);
+ 176   1          ntim_dis_irq(ntimx);
+ 177   1      }
+ 178          
+C51 COMPILER V9.60.7.0   TIM                                                               12/23/2024 02:56:05 PAGE 4   
+
+ 179          void ntim_reload(ntim_t *ntimx)
+ 180          {
+ 181   1          if (ntimx->mode == TIM_MODE_8BIT)
+ 182   1              return;
+ 183   1          else
+ 184   1          {
+ 185   2              switch (ntimx->tim_id)
+ 186   2              {
+ 187   3              case TIM0:
+ 188   3                  TH0 = ntimx->th;
+ 189   3                  TL0 = ntimx->tl;
+ 190   3                  break;
+ 191   3              case TIM1:
+ 192   3                  TH1 = ntimx->th;
+ 193   3                  TL1 = ntimx->tl;
+ 194   3                  break;
+ 195   3              default:
+ 196   3                  break;
+ 197   3              }
+ 198   2          }
+ 199   1      }
+ 200          
+ 201          void ntim_start(ntim_t *ntimx)
+ 202          {
+ 203   1          switch (ntimx->tim_id)
+ 204   1          {
+ 205   2          case TIM0:
+ 206   2              TR0 = 1;
+ 207   2              break;
+ 208   2          case TIM1:
+ 209   2              TR1 = 1;
+ 210   2              break;
+ 211   2          default:
+ 212   2              break;
+ 213   2          }
+ 214   1      }
+ 215          
+ 216          void ntim_stop(ntim_t *ntimx)
+ 217          {
+ 218   1          switch (ntimx->tim_id)
+ 219   1          {
+ 220   2          case TIM0:
+ 221   2              TR0 = 0;
+ 222   2              break;
+ 223   2          case TIM1:
+ 224   2              TR1 = 0;
+ 225   2              break;
+ 226   2          default:
+ 227   2              break;
+ 228   2          }
+ 229   1      }
+ 230          
+ 231          void ntim_en_irq(ntim_t *ntimx)
+ 232          {
+ 233   1          switch (ntimx->tim_id)
+ 234   1          {
+ 235   2          case TIM0:
+ 236   2              ET0 = 1;
+ 237   2              break;
+ 238   2          case TIM1:
+ 239   2              ET1 = 1;
+ 240   2              break;
+C51 COMPILER V9.60.7.0   TIM                                                               12/23/2024 02:56:05 PAGE 5   
+
+ 241   2          default:
+ 242   2              break;
+ 243   2          }
+ 244   1      }
+ 245          
+ 246          void ntim_dis_irq(ntim_t *ntimx)
+ 247          {
+ 248   1          switch (ntimx->tim_id)
+ 249   1          {
+ 250   2          case TIM0:
+ 251   2              ET0 = 0;
+ 252   2              break;
+ 253   2          case TIM1:
+ 254   2              ET1 = 0;
+ 255   2              break;
+ 256   2          default:
+ 257   2              break;
+ 258   2          }
+ 259   1      }
+ 260          
+ 261          #endif
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    632    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     30      25
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

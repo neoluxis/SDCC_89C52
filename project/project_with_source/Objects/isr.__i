@@ -1,0 +1,1 @@
+"..\user\isr.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\isr.lst) OBJECT(.\Objects\isr.obj)

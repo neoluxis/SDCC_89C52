@@ -1,0 +1,1 @@
+"..\peripherials\src\display_seg.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\display_seg.lst) OBJECT(.\Objects\display_seg.obj)

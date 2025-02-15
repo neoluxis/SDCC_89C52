@@ -1,0 +1,204 @@
+C51 COMPILER V9.60.7.0   BTN                                                               12/23/2024 02:56:05 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE BTN
+OBJECT MODULE PLACED IN .\Objects\btn.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\peripherials\src\btn.c WARNINGLEVEL(0) OPTIMIZE(9,SIZE) BROWSE INCDIR
+                    -(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\btn.lst) OBJECT(.\Objects\btn.obj)
+
+line level    source
+
+   1          #include "neolib51/btn.h"
+   2          #include "neolib51/time.h"
+   3          
+   4          #include "REGX52.H"
+   5          
+   6          // Button port
+   7          #define BTN_Port P3
+   8          
+   9          nbtn_ord nbtn_scan_dep(const nbtn_scan_mode cont)
+  10          {
+  11   1          static nbtn_state btn_state = BTN_State_Released;
+  12   1          nbtn_ord btn = NONE_BTN;
+  13   1          uint8_t kvalue = 0xff;
+  14   1      
+  15   1          // 连续扫描
+  16   1          if (cont == BTN_Scan_Continuous)
+  17   1          {
+  18   2              btn_state = BTN_State_Released;
+  19   2          }
+  20   1      
+  21   1          if (btn_state == BTN_State_Pressed)
+  22   1          {
+  23   2              BTN_Port = 0xff;
+  24   2              kvalue = BTN_Port;
+  25   2              if (kvalue == 0xff)
+  26   2              {
+  27   3                  btn_state = BTN_State_Released;
+  28   3              }
+  29   2              else
+  30   2              {
+  31   3                  return NONE_BTN;
+  32   3              }
+  33   2          }
+  34   1      
+  35   1          BTN_Port = 0xff;
+  36   1          kvalue = BTN_Port;
+  37   1          if (kvalue == 0xff)
+  38   1          {
+  39   2              return NONE_BTN;
+  40   2          }
+  41   1          ntime_delay_ms(10);
+  42   1          kvalue = BTN_Port;
+  43   1          switch (kvalue)
+  44   1          {
+  45   2          case 0xfe:
+  46   2              return BTN1;
+  47   2              break;
+  48   2          case 0xfd:
+  49   2              return BTN2;
+  50   2              break;
+  51   2          case 0xfb:
+  52   2              return BTN3;
+  53   2              break;
+  54   2          case 0xf7:
+C51 COMPILER V9.60.7.0   BTN                                                               12/23/2024 02:56:05 PAGE 2   
+
+  55   2              return BTN4;
+  56   2              break;
+  57   2          default:
+  58   2              break;
+  59   2          }
+  60   1          return NONE_BTN;
+  61   1      }
+  62          
+  63          /**
+  64           * @brief 扫描矩阵键盘列
+  65           * @return nbtn_ord 返回对应列第一行的按键编号
+  66           */
+  67          static nbtn_ord __nbtn_mat_col_scan(void)
+  68          {
+  69   1          uint8_t kvalue = 0;
+  70   1          BTN_Port = 0x0f;
+  71   1          kvalue = BTN_Port & 0x0f;
+  72   1          if (kvalue == 0x0f)
+  73   1          {
+  74   2              return NONE_BTN;
+  75   2          }
+  76   1          BTN_Port = 0x0f;
+  77   1          ntime_delay_ms(2);
+  78   1          kvalue = BTN_Port & 0x0f;
+  79   1          switch (kvalue)
+  80   1          {
+  81   2          case 0x0e:
+  82   2              return MATBTN_11;
+  83   2              break;
+  84   2          case 0x0d:
+  85   2              return MATBTN_21;
+  86   2              break;
+  87   2          case 0x0b:
+  88   2              return MATBTN_31;
+  89   2              break;
+  90   2          case 0x07:
+  91   2              return MATBTN_41;
+  92   2              break;
+  93   2          default:
+  94   2              break;
+  95   2          }
+  96   1          return NONE_BTN;
+  97   1      }
+  98          
+  99          /**
+ 100           * @brief 扫描矩阵键盘行, 在列扫描后的数据上加上行的偏移
+ 101           * @return nbtn_ord 返回的按键编号
+ 102           */
+ 103          static nbtn_ord __nbtn_mat_row_scan(nbtn_ord col)
+ 104          {
+ 105   1          uint8_t kvalue = 0;
+ 106   1      
+ 107   1          if (col == NONE_BTN)
+ 108   1          {
+ 109   2              return NONE_BTN;
+ 110   2          }
+ 111   1      
+ 112   1          BTN_Port = 0xf0;
+ 113   1          kvalue = BTN_Port & 0xf0;
+ 114   1          if (kvalue == 0xf0)
+ 115   1          {
+ 116   2              return NONE_BTN;
+C51 COMPILER V9.60.7.0   BTN                                                               12/23/2024 02:56:05 PAGE 3   
+
+ 117   2          }
+ 118   1          BTN_Port = 0xf0;
+ 119   1          ntime_delay_ms(1);
+ 120   1          kvalue = BTN_Port & 0xf0;
+ 121   1          switch (kvalue)
+ 122   1          {
+ 123   2          case 0xe0:
+ 124   2              return col + 0;
+ 125   2              break;
+ 126   2          case 0xd0:
+ 127   2              return col + 1;
+ 128   2              break;
+ 129   2          case 0xb0:
+ 130   2              return col + 2;
+ 131   2              break;
+ 132   2          case 0x70:
+ 133   2              return col + 3;
+ 134   2              break;
+ 135   2          default:
+ 136   2              break;
+ 137   2          }
+ 138   1          return NONE_BTN;
+ 139   1      }
+ 140          
+ 141          static nbtn_ord __nbtn_mat_full_scan(void)
+ 142          {
+ 143   1          nbtn_ord col = __nbtn_mat_col_scan();
+ 144   1          return __nbtn_mat_row_scan(col);
+ 145   1      }
+ 146          
+ 147          nbtn_ord nbtn_scan_matrix(const nbtn_scan_mode cont)
+ 148          {
+ 149   1          static nbtn_state btn_state = BTN_State_Released;
+ 150   1          nbtn_ord btn = NONE_BTN;
+ 151   1          uint8_t kvalue = 0xff;
+ 152   1      
+ 153   1          // 连续扫描
+ 154   1          if (cont == BTN_Scan_Continuous)
+ 155   1          {
+ 156   2              btn_state = BTN_State_Released;
+ 157   2          }
+ 158   1      
+ 159   1          if (btn_state == BTN_State_Pressed)
+ 160   1          {
+ 161   2              btn = __nbtn_mat_full_scan();
+ 162   2              if (btn == NONE_BTN)
+ 163   2              {
+ 164   3                  btn_state = BTN_State_Released;
+ 165   3              }
+ 166   2              else
+ 167   2              {
+ 168   3                  return NONE_BTN;
+ 169   3              }
+ 170   2          }
+ 171   1      
+ 172   1          btn = __nbtn_mat_full_scan();
+ 173   1          return btn;
+ 174   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    255    ----
+C51 COMPILER V9.60.7.0   BTN                                                               12/23/2024 02:56:05 PAGE 4   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

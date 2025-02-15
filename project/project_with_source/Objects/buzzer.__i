@@ -1,0 +1,1 @@
+"..\peripherials\src\buzzer.c" OPTIMIZE (0,SPEED) BROWSE INCDIR(..\peripherials\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\buzzer.lst) TABS (2) OBJECT(.\Objects\buzzer.obj)

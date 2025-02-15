@@ -1,0 +1,43 @@
+C51 COMPILER V9.60.7.0   TIME                                                              12/23/2024 02:56:05 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIME
+OBJECT MODULE PLACED IN .\Objects\time.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\peripherials\src\time.c WARNINGLEVEL(0) OPTIMIZE(9,SIZE) BROWSE INCDI
+                    -R(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\time.lst) OBJECT(.\Objects\time.obj)
+
+line level    source
+
+   1          #include "neolib51/time.h"
+   2          
+   3          #if TIME == ENABLE
+   4          
+   5          #include "REGX52.H"
+   6          
+   7          #ifdef DELAY_WITH_TIMER
+              #include "neolib51/tim.h"
+              // TODO: Implement delay with timer
+              #else
+  11          void ntime_delay_ms(const uint16_t ms)
+  12          {
+  13   1          uint16_t i, j;
+  14   1          for (i = 0; i < ms; i++)
+  15   1              for (j = 0; j < 114; j++)
+  16   1                  ;
+  17   1      }
+  18          #endif
+  19          #endif
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     32    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

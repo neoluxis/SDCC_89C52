@@ -1,0 +1,1 @@
+"..\peripherials\src\led.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\led.lst) OBJECT(.\Objects\led.obj)

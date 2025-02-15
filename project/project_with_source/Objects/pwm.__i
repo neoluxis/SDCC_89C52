@@ -1,0 +1,1 @@
+"..\peripherials\src\pwm.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\pwm.lst) OBJECT(.\Objects\pwm.obj)

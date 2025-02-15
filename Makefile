@@ -62,12 +62,12 @@ $(BUILD_DIR):
 	@mkdir -pv $@
 
 $(OBJ_DIR): $(BUILD_DIR)
-	@mkdir -p $@
-	@mkdir -p $@/$(CORE_DIR)
-	@mkdir -p $@/$(PERIPH_DIR)
-	@mkdir -p $@/$(PERIPH_SRC)
+	@mkdir -pv $@
+	@mkdir -pv $@/$(CORE_DIR)
+	@mkdir -pv $@/$(PERIPH_DIR)
+	@mkdir -pv $@/$(PERIPH_SRC)
 
 clean:
-	@rm -fr $(BUILD_DIR)
+	@rm -frv $(BUILD_DIR)
 
 .PHONY: clean all flash

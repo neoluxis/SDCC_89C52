@@ -1,0 +1,1 @@
+"..\peripherials\src\tim.c" WARNINGLEVEL (0) OPTIMIZE (9,SIZE) BROWSE INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\tim.lst) OBJECT(.\Objects\tim.obj)

@@ -1,0 +1,76 @@
+C51 COMPILER V9.60.7.0   LED                                                               12/23/2024 02:56:05 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\led.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\peripherials\src\led.c WARNINGLEVEL(0) OPTIMIZE(9,SIZE) BROWSE INCDIR
+                    -(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\led.lst) OBJECT(.\Objects\led.obj)
+
+line level    source
+
+   1          #include "neolib51/led.h"
+   2          
+   3          #include "REGX52.H"
+   4          
+   5          #define LED_Port P1
+   6          
+   7          void nled_biton(const nled_bitord LEDx) { LED_Port &= ~LEDx; }
+   8          void nled_bitoff(const nled_bitord LEDx) { LED_Port |= LEDx; }
+   9          
+  10          void nled_allon(void) { LED_Port = 0x00; }
+  11          
+  12          void nled_alloff(void) { LED_Port = 0xff; }
+  13          
+  14          void nled_alltoggle(void)
+  15          {
+  16   1        LED_Port = ~LED_Port;
+  17   1      }
+  18          
+  19          void nled_set(uint8_t n, uint8_t status)
+  20          {
+  21   1        LED_Port = status;
+  22   1      }
+  23          
+  24          uint8_t nled_get(uint8_t n)
+  25          {
+  26   1        return LED_Port;
+  27   1      }
+  28          
+  29          void nled_bittoggle(const nled_bitord LEDx)
+  30          {
+  31   1        LED_Port ^= LEDx;
+  32   1      }
+  33          
+  34          void nled_set_bitstate(nled_bitord LEDx, nled_state state)
+  35          {
+  36   1        switch (state)
+  37   1        {
+  38   2        case LED_State_ON:
+  39   2          nled_biton(LEDx);
+  40   2          break;
+  41   2        case LED_State_OFF:
+  42   2          nled_bitoff(LEDx);
+  43   2          break;
+  44   2        }
+  45   1      }
+  46          
+  47          nled_state nled_get_bitstate(nled_bitord LEDx)
+  48          {
+  49   1        return (LED_Port & LEDx) >> (LEDx >> 1);
+  50   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     68    ----
+C51 COMPILER V9.60.7.0   LED                                                               12/23/2024 02:56:05 PAGE 2   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

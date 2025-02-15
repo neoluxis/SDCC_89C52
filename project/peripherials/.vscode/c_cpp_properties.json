@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                ".",
+                "../user",
+                "../peripherials/inc",
+                "d:/Keil_v5/C51/INC",
+                "d:/Keil_v5/C51/INC/Atmel",
+                "${default}"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,26 @@
+C51 COMPILER V9.60.7.0   DISPLAY_SEG                                                       12/23/2024 02:56:05 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DISPLAY_SEG
+OBJECT MODULE PLACED IN .\Objects\display_seg.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\peripherials\src\display_seg.c WARNINGLEVEL(0) OPTIMIZE(9,SIZE) BROWS
+                    -E INCDIR(..\peripherials\inc;..\user) DEBUG OBJECTEXTEND PRINT(.\Listings\display_seg.lst) OBJECT(.\Objects\display_seg.
+                    -obj)
+
+line level    source
+
+   1          #include "neolib51/display_seg.h"
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
